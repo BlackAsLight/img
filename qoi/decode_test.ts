@@ -239,3 +239,20 @@ Deno.test("decodeQOI() rejecting due to expecting more bytes", () => {
     "Expected more bytes from input",
   );
 });
+
+Deno.test("decodeQOI() correctly decoding a subarray", () => {
+  const encoded = encodeQOI(new Uint8Array([128, 128, 128, 128]), {
+    width: 1,
+    height: 1,
+    channels: "rgb",
+    colorspace: 0,
+  });
+  const buffer = new Uint8Array(encoded.length + 1);
+  buffer.set(encoded, 1);
+  assertEquals(
+    decodeQOI(
+      buffer.subarray(1),
+    ).body,
+    new Uint8Array([128, 128, 128, 255]),
+  );
+});

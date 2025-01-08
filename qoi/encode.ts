@@ -1,4 +1,4 @@
-import { createEncoder } from "./_common.ts";
+import { createEncoder } from "./_encoder.ts";
 import type { QOIOptions } from "./types.ts";
 
 /**
@@ -50,6 +50,11 @@ export function encodeQOI(
 
   const originalSize = input.length;
   const maxSize = 14 + originalSize + (isRGB ? 0 : originalSize / 4) + 8;
+  if (input.byteOffset) {
+    const buffer = new Uint8Array(input.buffer);
+    buffer.set(input);
+    input = buffer.subarray(0, input.length);
+  }
   // deno-lint-ignore no-explicit-any
   const output = new Uint8Array((input.buffer as any).transfer(maxSize));
   output.set(output.subarray(0, originalSize), maxSize - originalSize);

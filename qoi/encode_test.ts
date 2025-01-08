@@ -218,3 +218,25 @@ Deno.test("encodeQOI() correctly encoding QOI_OP_INDEX", () => {
     ]),
   );
 });
+
+Deno.test("encodeQOI() correctly encoding a subarray", () => {
+  const [a, b, c, d] = [128, 128, 128, 255];
+  const buffer = new Uint8Array([7, a, b, c, d, 64, 1, 64, 255, a, b, c, d]);
+  assertEquals(
+    encodeQOI(
+      buffer.subarray(1),
+      { width: 3, height: 1, channels: "rgb", colorspace: 0 },
+    ).slice(14, -8),
+    new Uint8Array([
+      0b11111110,
+      a,
+      b,
+      c,
+      0b11111110,
+      64,
+      1,
+      64,
+      (0b00 << 6) + ((a * 3 + b * 5 + c * 7 + d * 11) % 64),
+    ]),
+  );
+});

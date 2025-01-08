@@ -1,4 +1,4 @@
-import { createDecoder } from "./_common.ts";
+import { createDecoder } from "./_decoder.ts";
 import type { QOIOptions } from "./types.ts";
 
 /**
@@ -44,8 +44,8 @@ export function decodeQOI(
   }
   const view = new DataView(input.buffer);
   const header: QOIOptions = {
-    width: view.getUint32(4),
-    height: view.getUint32(8),
+    width: view.getUint32(4 + input.byteOffset),
+    height: view.getUint32(8 + input.byteOffset),
     channels: input[12] === 3 ? "rgb" : "rgba",
     colorspace: input[13],
   };
@@ -54,6 +54,11 @@ export function decodeQOI(
   const maxSize = 14 +
     4 * header.width * header.height * (header.channels === "rgb" ? 1 : 1.25) +
     8;
+  if (input.byteOffset) {
+    const buffer = new Uint8Array(input.buffer);
+    buffer.set(input);
+    input = buffer.subarray(0, input.length);
+  }
   // deno-lint-ignore no-explicit-any
   const output = new Uint8Array((input.buffer as any).transfer(maxSize));
   output.set(output.subarray(0, originalSize), maxSize - originalSize);
