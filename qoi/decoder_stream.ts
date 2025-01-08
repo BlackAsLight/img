@@ -1,6 +1,6 @@
 import { toByteStream } from "@std/streams/unstable-to-byte-stream";
 import type { QOIOptions } from "./types.ts";
-import { createDecoder } from "./_common.ts";
+import { createDecoder } from "./_decoder.ts";
 
 /**
  * The QOIDecoderStream is a TransformStream that decodes qoi image format into
@@ -74,6 +74,11 @@ export class QOIDecoderStream
         for await (let chunk of byteStream) {
           const originalSize = chunk.length;
           const maxSize = (offset + originalSize) * 63 * (isRGB ? 4 : 5);
+          if (chunk.byteOffset) {
+            const buffer = new Uint8Array(chunk.buffer);
+            buffer.set(chunk);
+            chunk = buffer.subarray(0, chunk.length);
+          }
           // deno-lint-ignore no-explicit-any
           chunk = new Uint8Array((chunk.buffer as any).transfer(maxSize));
           chunk.set(chunk.subarray(0, originalSize), maxSize - originalSize);

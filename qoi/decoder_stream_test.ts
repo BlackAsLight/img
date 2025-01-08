@@ -271,34 +271,6 @@ Deno.test("QOIDecoderStream() rejecting invalid premature exit", async () => {
   );
 });
 
-// Deno.test("QOIDecoderStream() rejecting invalid buffer loading", async () => {
-//   const bytes = (await toBytes(
-//     ReadableStream
-//       .from([new Uint8Array([128, 128, 128, 255])])
-//       .pipeThrough(
-//         new QOIEncoderStream({
-//           width: 1,
-//           height: 1,
-//           channels: "rgb",
-//           colorspace: 0,
-//         }),
-//       ),
-//   )).slice(0, 15);
-
-//   await assertRejects(
-//     async () => {
-//       for await (
-//         const _ of ReadableStream
-//           .from([bytes])
-//           .pipeThrough(new QOIDecoderStream())
-//         // deno-lint-ignore no-empty
-//       ) {}
-//     },
-//     RangeError,
-//     "Expected more",
-//   );
-// });
-
 Deno.test("QOIDecodedStream() rejecting invalid length", async () => {
   const bytes = await toBytes(
     ReadableStream
@@ -325,5 +297,33 @@ Deno.test("QOIDecodedStream() rejecting invalid length", async () => {
     },
     RangeError,
     "Expected more bytes from stream",
+  );
+});
+
+Deno.test("QOIDecoderStream() correctly decoding a subarray", async () => {
+  assertEquals(
+    await toBytes(
+      ReadableStream
+        .from([new Uint8Array([128, 128, 128, 128])])
+        .pipeThrough(
+          new QOIEncoderStream({
+            width: 1,
+            height: 1,
+            channels: "rgb",
+            colorspace: 0,
+          }),
+        )
+        .pipeThrough(
+          new TransformStream({
+            transform(chunk, controller): void {
+              const buffer = new Uint8Array(chunk.length + 1);
+              buffer.set(chunk, 1);
+              controller.enqueue(buffer.subarray(1));
+            },
+          }),
+        )
+        .pipeThrough(new QOIDecoderStream()),
+    ),
+    new Uint8Array([128, 128, 128, 255]),
   );
 });
