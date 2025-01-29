@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
-      - run: deno test -R='.output/' -W='.output/' --coverage='coverage/'
+      - run: deno test -R='.output/' -W='.output/' --coverage='coverage/' --reporter=dot
       - run: deno coverage --html coverage/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

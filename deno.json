@@ -11,7 +11,7 @@
     "cov:mac": "deno task cov && open .coverage/html/index.html",
     "cov:lin": "deno task cov && xdg-open .coverage/html/index.html",
     "cov:win": "deno task cov && start .coverage/html/index.html",
-    "test": "deno test -R='.output/' -W='.output/' --parallel --doc --trace-leaks --coverage='.coverage/' --clean",
+    "test": "deno test -R='.output/' -W='.output/' --parallel --doc --trace-leaks --coverage='.coverage/' --clean --reporter=dot",
     "ok": "deno fmt && deno lint && deno task test"
   },
   "lint": {
