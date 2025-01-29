@@ -1,0 +1,8 @@
+{
+  "name": "@img/png",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./encode": "./encode.ts"
+  }
+}
