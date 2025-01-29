@@ -78,8 +78,7 @@ export class QOIEncoderStream extends TransformStream<Uint8Array, Uint8Array> {
         count += (i - (maxSize - originalSize - offset)) / 4;
         offset = chunk.length - i;
         if (offset) buffer.set(chunk.subarray(i));
-        // deno-lint-ignore no-explicit-any
-        controller.enqueue(new Uint8Array((chunk.buffer as any).transfer(o)));
+        controller.enqueue(chunk.subarray(0, o));
       },
       flush(controller): void {
         if (offset) {

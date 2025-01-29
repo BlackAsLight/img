@@ -97,8 +97,7 @@ export class QOIDecoderStream
           count += c;
           offset = chunk.length - i;
           if (offset) buffer.set(chunk.subarray(i));
-          // deno-lint-ignore no-explicit-any
-          yield new Uint8Array((chunk.buffer as any).transfer(o));
+          yield chunk.subarray(0, o);
           if (isEnd) {
             if (count !== width * height) {
               throw new RangeError(

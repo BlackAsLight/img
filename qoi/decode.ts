@@ -73,8 +73,7 @@ export function decodeQOI(
         }) in header`,
       );
     }
-    // deno-lint-ignore no-explicit-any
-    return { header, body: new Uint8Array((output.buffer as any).transfer(o)) };
+    return { header, body: output.subarray(0, o) };
   }
   throw new RangeError("Expected more bytes from input");
 }

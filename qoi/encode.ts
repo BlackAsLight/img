@@ -82,6 +82,5 @@ export function encodeQOI(
   }
 
   output.set([0, 0, 0, 0, 0, 0, 0, 1], o);
-  // deno-lint-ignore no-explicit-any
-  return new Uint8Array((output.buffer as any).transfer(o + 8));
+  return output.subarray(0, o + 8);
 }
