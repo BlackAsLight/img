@@ -371,3 +371,48 @@ Deno.test("QOIEncoderStream() correctly encoding QOI_OP_INDEX", async () => {
     ]),
   );
 });
+
+Deno.test("QOIEncoderStream() correctly encoding a subarray", async () => {
+  const buffer = new Uint8Array([
+    7,
+    128,
+    128,
+    128,
+    255,
+    64,
+    1,
+    64,
+    255,
+    128,
+    128,
+    128,
+    255,
+  ]);
+  assertEquals(
+    (await toBytes(
+      ReadableStream
+        .from([
+          buffer.subarray(1),
+        ])
+        .pipeThrough(
+          new QOIEncoderStream({
+            width: 3,
+            height: 1,
+            channels: "rgb",
+            colorspace: 0,
+          }),
+        ),
+    )).slice(14, -8),
+    new Uint8Array([
+      0b11111110,
+      128,
+      128,
+      128,
+      0b11111110,
+      64,
+      1,
+      64,
+      0b00_000000 + ((128 * 3 + 128 * 5 + 128 * 7 + 255 * 11) % 64),
+    ]),
+  );
+});

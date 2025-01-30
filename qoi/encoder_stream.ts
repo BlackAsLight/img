@@ -1,4 +1,4 @@
-import { createEncoder } from "./_common.ts";
+import { createEncoder } from "./_encoder.ts";
 import type { QOIOptions } from "./types.ts";
 
 /**
@@ -60,6 +60,11 @@ export class QOIEncoderStream extends TransformStream<Uint8Array, Uint8Array> {
       transform(chunk, controller): void {
         const originalSize = chunk.length;
         const maxSize = Math.ceil(offset + originalSize / 4) * (isRGB ? 4 : 5);
+        if (chunk.byteOffset) {
+          const buffer = new Uint8Array(chunk.buffer);
+          buffer.set(chunk);
+          chunk = buffer.subarray(0, chunk.length);
+        }
         // deno-lint-ignore no-explicit-any
         chunk = new Uint8Array((chunk.buffer as any).transfer(maxSize));
         chunk.set(chunk.subarray(0, originalSize), maxSize - originalSize);
@@ -73,8 +78,7 @@ export class QOIEncoderStream extends TransformStream<Uint8Array, Uint8Array> {
         count += (i - (maxSize - originalSize - offset)) / 4;
         offset = chunk.length - i;
         if (offset) buffer.set(chunk.subarray(i));
-        // deno-lint-ignore no-explicit-any
-        controller.enqueue(new Uint8Array((chunk.buffer as any).transfer(o)));
+        controller.enqueue(chunk.subarray(0, o));
       },
       flush(controller): void {
         if (offset) {
