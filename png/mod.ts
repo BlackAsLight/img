@@ -1,1 +1,1 @@
-export * from "./encode.ts";
+export * from "./encode/mod.ts";
