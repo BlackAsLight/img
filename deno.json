@@ -1,5 +1,5 @@
 {
-  "workspace": ["qoi"],
+  "workspace": ["png", "qoi"],
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@std/bytes": "jsr:@std/bytes@1",
