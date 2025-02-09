@@ -12,7 +12,7 @@ export function scanlines(
     for (let h = 0; h < height; ++h) {
       output[i][h] = input.subarray(
         offset + h * width * pSize,
-        offset + (h * width + width) * pSize,
+        offset + (h + 1) * width * pSize,
       );
     }
     offset += width * height * pSize;

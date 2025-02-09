@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "exports": {
     ".": "./mod.ts",
-    "./encode": "./encode/mod.ts"
+    "./encode": "./encode/mod.ts",
+    "./decode": "./decode/mod.ts"
   }
 }

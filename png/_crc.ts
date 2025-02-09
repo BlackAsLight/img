@@ -10,7 +10,7 @@ const CRC = function (): Uint32Array {
   return array;
 }();
 
-export function calcCRC(buffer: Uint8Array): number {
+export function calcCRC(buffer: Uint8Array | Uint8ClampedArray): number {
   let crc = 0xFFFFFFFF;
   for (let i = 0; i < buffer.length; ++i) {
     crc = CRC[(crc ^ buffer[i]) & 0xFF] ^ (crc >>> 8);
