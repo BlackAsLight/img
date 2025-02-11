@@ -3,10 +3,6 @@ import { concat } from "@std/bytes";
 import { encodePNG } from "../encode/mod.ts";
 import { decodePNG } from "../mod.ts";
 import { calcCRC } from "../_crc.ts";
-import { passExtraction as encode } from "../encode/_passExtraction.ts";
-import { passExtraction as decode } from "./_passExtraction.ts";
-import type { PNGOptions } from "../types.ts";
-import { images } from "../_common_pass.ts";
 
 interface Chunk {
   length: number;
