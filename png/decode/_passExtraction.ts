@@ -16,7 +16,6 @@ export function passExtraction(
       let p = 0;
       for (let i = 0; i < mid.length; i += pSize, ++p) {
         const x = moveTo(p, offsets, options) * pSize;
-        // console.log(i, p, mid.subarray(x, x + pSize), x, x / pSize);
         output.set(
           mid.subarray(x, x + pSize),
           p * pSize,
