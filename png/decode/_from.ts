@@ -46,14 +46,9 @@ export function fromIndex(
   i: number,
   palette: Uint32Array,
 ): void {
-  const view = new DataView(
-    output.buffer,
-    output.byteOffset,
-    output.byteLength,
-  );
   let o = 0;
-  for (; i < output.length; i += 4) {
-    const pixel = palette[palette.indexOf(view.getUint32(i))];
+  for (; i < output.length; ++i) {
+    const pixel = palette[output[i]];
     output[o++] = pixel >>> 24 & 0xFF;
     output[o++] = pixel >>> 16 & 0xFF;
     output[o++] = pixel >>> 8 & 0xFF;

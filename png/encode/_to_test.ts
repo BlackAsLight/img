@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { toGrayscale, toGreyscaleAlpha, toIndex, toTruecolor } from "./_to.ts";
+import { toGrayscale, toGrayscaleAlpha, toIndex, toTruecolor } from "./_to.ts";
 
 Deno.test("toGrayScale()", () => {
   assertEquals(
@@ -12,7 +12,7 @@ Deno.test("toGrayScale()", () => {
 
 Deno.test("toGreyscaleAlpha()", () => {
   assertEquals(
-    toGreyscaleAlpha(
+    toGrayscaleAlpha(
       Uint8Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
     ),
     Uint8Array.from([0, 3, 4, 7, 8, 11, 12, 15]),

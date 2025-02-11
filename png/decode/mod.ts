@@ -16,13 +16,16 @@ export async function decodePNG(
   input: Uint8Array | Uint8ClampedArray,
 ): Promise<{ header: PNGOptions; body: Uint8Array }> {
   if (![137, 80, 78, 71, 13, 10, 26, 10].every((x, i) => x === input[i])) {
-    throw new TypeError("Invalid PNG Signature");
+    throw new TypeError("PNG had invalid signature");
   }
 
   const view = new DataView(input.buffer, input.byteOffset, input.byteLength);
   const chunkIHDR = getChunk(input, view, 8);
   if (![73, 72, 68, 82].every((x, i) => x === chunkIHDR.type[i])) {
-    throw new TypeError("Expected IHDR chunk");
+    throw new TypeError(
+      "An IHDR chunk was expected. Found: " +
+        new TextDecoder().decode(chunkIHDR.type),
+    );
   }
   const [bitDepth, colorType, options] = function (): [
     number,
@@ -35,9 +38,13 @@ export async function decodePNG(
       chunkIHDR.data.byteLength,
     );
     const width = view.getUint32(0);
-    if (width > 2 ** 31 - 1) throw new RangeError("Invalid width");
+    if (width === 0 || width > 2 ** 31 - 1) {
+      throw new RangeError("PNG has an invalid Width: " + width);
+    }
     const height = view.getUint32(4);
-    if (height > 2 ** 31 - 1) throw new RangeError("Invalid height");
+    if (height === 0 || height > 2 ** 31 - 1) {
+      throw new RangeError("PNG has an invalid Height: " + height);
+    }
     const bitDepth = chunkIHDR.data[8];
     const colorType = chunkIHDR.data[9];
     switch (colorType) {
@@ -45,29 +52,43 @@ export async function decodePNG(
       case 4:
       case 2:
         if (![8, 16].includes(bitDepth)) {
-          throw new TypeError("Invalid bitDepth and colorType combination");
+          throw new TypeError(
+            "PNG has invalid bitDepth and colorType combination",
+          );
         }
         break;
       case 3:
         if (![1, 2, 4, 8].includes(bitDepth)) {
-          throw new TypeError("Invalid bitDepth and colorType combination");
+          throw new TypeError(
+            "PNG has invalid bitDepth and colorType combination",
+          );
         }
         break;
       case 0:
         if (![1, 2, 4, 8, 16].includes(bitDepth)) {
-          throw new TypeError("Invalid bitDepth and colorType combination");
+          throw new TypeError(
+            "PNG has invalid bitDepth and colorType combination",
+          );
         }
         break;
       default:
-        throw new TypeError("Invalid bitDepth and colorType combination");
+        throw new TypeError(
+          "PNG has invalid bitDepth and colorType combination",
+        );
     }
     const compression = chunkIHDR.data[10];
-    if (compression !== 0) throw new TypeError("Invalid compression method");
+    if (compression !== 0) {
+      throw new TypeError(
+        "PNG has an invalid compression method: " + compression,
+      );
+    }
     const filter = chunkIHDR.data[11];
-    if (filter !== 0) throw new TypeError("Invalid filter method");
+    if (filter !== 0) {
+      throw new TypeError("PNG has an invalid filter method: " + filter);
+    }
     const interlace = chunkIHDR.data[12];
     if (interlace !== 0 && interlace !== 1) {
-      throw new TypeError("Invalid interlace method");
+      throw new TypeError("PNG has an invalid interlace method: " + interlace);
     }
     return [bitDepth, colorType, {
       width,
@@ -78,7 +99,7 @@ export async function decodePNG(
     }];
   }();
   if (bitDepth !== 8) {
-    throw new Error("Bit Depths other than 8 are't implemented yet");
+    throw new Error("Bit Depths other than 8 aren't implemented yet");
   }
   const pixelSize = function (): number {
     switch (colorType) {
@@ -89,7 +110,7 @@ export async function decodePNG(
       case 2:
         return 3;
       case 3:
-      default: //0
+      default: // 0
         return 1;
     }
   }();
@@ -106,35 +127,38 @@ export async function decodePNG(
       lastChunkWasIDAT = true;
     } else if (lastChunkWasIDAT) {
       if ([73, 69, 78, 68].every((x, i) => x === type[i])) break;
-      throw new TypeError("Expected IDAT or IEND chunk");
+      throw new TypeError(
+        "An IDAT or IEND chunk was expected. Found: " +
+          new TextDecoder().decode(type),
+      );
     } else if ([80, 76, 84, 69].every((x, i) => x === type[i])) {
       if (chunkPLTE == undefined) chunkPLTE = data.slice();
-      else throw new TypeError("Received multiple PLTE chunks");
+      else throw new TypeError("A PLTE chunk was already received");
     } else if ([116, 82, 78, 83].every((x, i) => x === type[i])) {
       if (chunktRNS == undefined) chunktRNS = data.slice();
-      else throw new TypeError("Received multiple tRNS chunks");
+      else throw new TypeError("A tRNS chunk was already received");
     }
   }
   switch (colorType) {
     case 3:
       if (chunkPLTE == undefined) {
-        throw new TypeError("Expected to find PLTE chunk");
+        throw new TypeError("A PLTE chunk was expected");
       }
-      if (chunkPLTE.length / 3 % 0 !== 0 || chunkPLTE.length > 256 * 3) {
-        throw new RangeError("Invalid data length for PLTE chunk");
+      if (chunkPLTE.length % 3 !== 0 || chunkPLTE.length > 256 * 3) {
+        throw new RangeError("The PLTE chunk has an invalid length");
       }
       if (chunktRNS != undefined && chunkPLTE.length / 3 !== chunktRNS.length) {
-        throw new RangeError("Invalid data length for tRNS chunk");
+        throw new RangeError("The tRNS chunk has an invalid length");
       }
       break;
     case 0:
       if (chunktRNS != undefined && chunktRNS.length !== 2) {
-        throw new RangeError("Invalid data length for tRNS chunk");
+        throw new RangeError("The tRNS chunk has an invalid length");
       }
       break;
     case 2:
       if (chunktRNS != undefined && chunktRNS.length !== 6) {
-        throw new RangeError("Invalid data length for tRNS chunk");
+        throw new RangeError("The tRNS chunk has an invalid length");
       }
       break;
   }
@@ -213,7 +237,12 @@ function getChunk(
   if (
     calcCRC(input.subarray(offset + 4, offset + 8 + length)) !==
       view.getUint32(offset + 8 + length)
-  ) throw new TypeError("CRC32 didn't match");
+  ) {
+    throw new TypeError(
+      "The CRC32 chunk didn't match for chunk: " +
+        new TextDecoder().decode(input.subarray(offset + 4, offset + 8)),
+    );
+  }
   return {
     o: offset + length + 12,
     type: input.subarray(offset + 4, offset + 8),

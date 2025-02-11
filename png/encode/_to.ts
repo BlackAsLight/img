@@ -54,8 +54,8 @@ function replaceTransparentPixels(
   for (let i = 0; i < input.length; i += 4) {
     if (input[i + 3] === 0) {
       input[i] = r;
-      input[i] = g;
-      input[i] = b;
+      input[i + 1] = g;
+      input[i + 2] = b;
     }
   }
 }
@@ -67,7 +67,7 @@ export function toGrayscale(
   return input.subarray(0, input.length / 4);
 }
 
-export function toGreyscaleAlpha(
+export function toGrayscaleAlpha(
   input: Uint8Array | Uint8ClampedArray,
 ): Uint8Array | Uint8ClampedArray {
   input[1] = input[3];

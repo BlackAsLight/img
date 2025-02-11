@@ -6,7 +6,7 @@ import { scanlines } from "./_scanlines.ts";
 import {
   guaranteeInvisiblePixel,
   toGrayscale,
-  toGreyscaleAlpha,
+  toGrayscaleAlpha,
   toIndex,
   toTruecolor,
 } from "./_to.ts";
@@ -70,12 +70,12 @@ export async function encodePNG(
         return [0, 1];
       }
       if (isHazy) {
-        input = toGreyscaleAlpha(input);
+        input = toGrayscaleAlpha(input);
         return [4, 2];
       }
       palette = guaranteeInvisiblePixel(input, colors, true);
       if (palette == undefined) {
-        input = toGreyscaleAlpha(input);
+        input = toGrayscaleAlpha(input);
         return [4, 2];
       }
       input = toGrayscale(input);

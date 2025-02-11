@@ -8,16 +8,29 @@ export function passExtraction(
   pSize: number,
   sizes: [number, number][],
 ): number {
-  const offsets: number[] = new Array(sizes.length)
-    .fill(0)
-    .map((_, i) => sizes.slice(0, i).reduce((x, y) => x + y[0] * y[1], 0));
-  let p = 0;
-  for (let i = 0; i < mid.length; i += pSize, ++p) {
-    output.set(mid.subarray(i, i + pSize), moveTo(p, offsets, options));
-  }
+  switch (options.interlace) {
+    case 1: {
+      const offsets: number[] = new Array(sizes.length)
+        .fill(0)
+        .map((_, i) => sizes.slice(0, i).reduce((x, y) => x + y[0] * y[1], 0));
+      let p = 0;
+      for (let i = 0; i < mid.length; i += pSize, ++p) {
+        const x = moveTo(p, offsets, options) * pSize;
+        // console.log(i, p, mid.subarray(x, x + pSize), x, x / pSize);
+        output.set(
+          mid.subarray(x, x + pSize),
+          p * pSize,
+        );
+      }
 
-  p = moveTo(--p, offsets, options) * pSize + 1;
-  const offset = output.length - p;
-  if (offset) output.set(output.subarray(0, p), offset);
-  return offset;
+      const offset = output.length - mid.length;
+      if (offset) output.set(output.subarray(0, mid.length), offset);
+      return offset;
+    }
+    default: {
+      const offset = output.length - mid.length;
+      output.set(mid, offset);
+      return offset;
+    }
+  }
 }
