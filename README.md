@@ -25,6 +25,11 @@ might get an implementation here.
 | [@img/svg](https://jsr.io/@img/svg)   | Not Implemented Yet                    | https://www.w3.org/TR/SVG2/                                  |
 | [@img/webp](https://jsr.io/@img/webp) | Not Implemented Yet                    | https://developers.google.com/speed/webp/docs/riff_container |
 
+## Try it yourself
+
+Quickly convert an image from PNG to QOI locally in your browser:
+https://blackaslight.github.io/img/
+
 ## Coverage
 
 [Coverage of Repo](https://blackaslight.github.io/img/coverage)
