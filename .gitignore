@@ -1,2 +1,4 @@
+*.js
 .coverage/
 .output/
+localhost/static/coverage/

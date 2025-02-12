@@ -1,4 +1,4 @@
-name: Coverage
+name: Host
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: "coverage"
+  group: "host"
   cancel-in-progress: true
 jobs:
   coverage:
@@ -17,10 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
-      - run: deno test -R='.output/' -W='.output/' --coverage='coverage/' --reporter=dot
-      - run: deno coverage --html coverage/
+      - run: deno task remote
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "coverage/html/"
+          path: "localhost/static/"
       - uses: actions/deploy-pages@v4
