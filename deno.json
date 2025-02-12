@@ -11,6 +11,7 @@
   },
   "exclude": ["**/.*"],
   "tasks": {
+    "bench": "deno bench _benchmark.ts",
     "cov": "deno task test --coverage='.coverage/' --clean && deno coverage --html .coverage/",
     "cov:mac": {
       "command": "open .coverage/html/index.html",
