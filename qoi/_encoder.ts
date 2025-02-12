@@ -38,7 +38,7 @@ export function createEncoder(isRGB: boolean): (
       } else {
         // QOI_OP_RUN
         if (run) {
-          data[o++] = 0b11 << 6 + run - 1;
+          data[o++] = (0b11 << 6) + run - 1;
           run = 0;
         }
 
