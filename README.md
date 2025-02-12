@@ -27,7 +27,8 @@ might get an implementation here.
 
 ## Try it yourself
 
-Quickly convert an image from PNG to QOI locally in your browser: https://blackaslight.github.io/img/
+Quickly convert an image from PNG to QOI locally in your browser:
+https://blackaslight.github.io/img/
 
 ## Coverage
 
