@@ -13,18 +13,15 @@
   "tasks": {
     "bench": "deno bench _benchmark.ts",
     "cov": "deno task test --coverage='.coverage/' --clean && deno coverage --html .coverage/",
-    "cov:mac": {
-      "command": "open .coverage/html/index.html",
-      "dependencies": ["cov"]
-    },
-    "cov:lin": {
-      "command": "xdg-open .coverage/html/index.html",
-      "dependencies": ["cov"]
-    },
-    "cov:win": {
-      "command": "start .coverage/html/index.html",
-      "dependencies": ["cov"]
-    },
+    "cov:mac": "deno task cov && open .coverage/html/index.html",
+    "cov:lin": "deno task cov && xdg-open .coverage/html/index.html",
+    "cov:win": "deno task cov && start .coverage/html/index.html",
+    "doc": "deno doc --html --output='.docs/'",
+    "doc:png": "deno task doc png/mod.ts",
+    "doc:qoi": "deno task doc qoi/mod.ts",
+    "doc:mac": "open .docs/index.html",
+    "doc:lin": "xdg-open .docs/index.html",
+    "doc:win": "start .docs/index.html",
     "test": "deno test -R='.output/' -W='.output/' --parallel --trace-leaks --reporter=dot",
     "lint": "deno lint",
     "fmt": "deno fmt",
