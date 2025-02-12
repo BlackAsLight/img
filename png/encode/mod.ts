@@ -11,6 +11,40 @@ import {
   toTruecolor,
 } from "./_to.ts";
 
+/**
+ * encodePNG is a function that encodes raw image data into the PNG image
+ * format. The raw image data is expected to be in a sequence of
+ * `[ r, g, b, a ]` numbers.
+ *
+ * @example
+ * ```ts
+ * import { encodePNG } from "@img/png";
+ *
+ * await Deno.mkdir(".output/", { recursive: true });
+ *
+ * const rawData = await new Response(ReadableStream.from(async function* () {
+ *   for (let r = 0; r < 256; ++r) {
+ *     for (let c = 0; c < 256; ++c) {
+ *       yield Uint8Array.from([255 - r, c, r, 255]);
+ *     }
+ *   }
+ * }())).bytes();
+ *
+ * await Deno.writeFile(".output/encode.png", await encodePNG(rawData, {
+ *   width: 256,
+ *   height: 256,
+ *   compression: 0,
+ *   filter: 0,
+ *   interlace: 0,
+ * }));
+ * ```
+ *
+ * @param input The raw image data.
+ * @param options The metadata for the raw image data.
+ * @returns An PNG image.
+ *
+ * @module
+ */
 export async function encodePNG(
   input: Uint8Array | Uint8ClampedArray,
   options: PNGOptions,

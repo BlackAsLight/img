@@ -12,6 +12,33 @@ import {
 } from "./_from.ts";
 import { makePixelTransparent } from "./_from.ts";
 
+/**
+ * decodePNG is a function that decodes a PNG image into raw image data. The raw
+ * image data is a sequence of `[ r, g, b, a ]` numbers.
+ *
+ * @example
+ * ```ts
+ * import { decodePNG, encodePNG } from "@img/png";
+ *
+ * const encodedData = await encodePNG(
+ *   await new Response(ReadableStream.from(async function* () {
+ *     for (let r = 0; r < 256; ++r) {
+ *       for (let c = 0; c < 256; ++c) {
+ *         yield new Uint8Array([255 - r, c, r, 255]);
+ *       }
+ *     }
+ *   }())).bytes(),
+ *   { width: 256, height: 256, compression: 0, filter: 0, interlace: 0 },
+ * );
+ *
+ * console.log((await decodePNG(encodedData)).header);
+ * ```
+ *
+ * @param input The PNG image.
+ * @returns The metadata and raw image data.
+ *
+ * @module
+ */
 export async function decodePNG(
   input: Uint8Array | Uint8ClampedArray,
 ): Promise<{ header: PNGOptions; body: Uint8Array }> {
