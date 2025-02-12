@@ -27,4 +27,4 @@ might get an implementation here.
 
 ## Coverage
 
-[Coverage of Repo](https://blackaslight.github.io/img/)
+[Coverage of Repo](https://blackaslight.github.io/img/coverage)
