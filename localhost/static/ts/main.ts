@@ -1,31 +1,31 @@
 import { extname } from "@std/path/extname";
-import { encodeQOI } from "@img/qoi/encode";
+import { decodePNG, encodePNG } from "@img/png";
+import { decodeQOI, encodeQOI } from "@img/qoi";
 
-document.querySelector("form")
+document.querySelector<HTMLFormElement>("form")
   ?.addEventListener("submit", async function (event): Promise<void> {
     event.preventDefault();
-    const [encoder, ext] = getEncoder(
-      event.submitter as HTMLInputElement | null,
-    ) ?? [];
-    if (encoder == undefined) return;
-    const inputTag = this
-      .querySelector<HTMLInputElement>('input[type="file"]');
-    if (inputTag?.files == undefined) return;
+    if (event.submitter == undefined) return;
+    const inputTag = event.submitter as HTMLInputElement;
+    const files = this
+      .querySelector<HTMLInputElement>('input[type="file"]')!.files;
+    if (files == undefined) return;
 
     this
-      .querySelectorAll<HTMLInputElement | HTMLButtonElement>("input, button")
+      .querySelectorAll<HTMLInputElement>("input")
       .forEach((tag) => tag.disabled = true);
 
-    for (const file of inputTag.files) {
-      console.log(file.name);
+    for (const file of files) {
       try {
+        console.log(file.name, file.type);
         const url = URL.createObjectURL(
-          await new Response(await encoder(...await fileToInput(file)))
+          await new Response(await encode(inputTag, ...await decode(file)))
             .blob(),
         );
         const aTag = document.createElement("a");
         aTag.href = url;
-        aTag.download = file.name.slice(0, -extname(file.name).length) + ext;
+        aTag.download = file.name.slice(0, -extname(file.name).length) +
+          newExt(inputTag);
         aTag.click();
         URL.revokeObjectURL(url);
       } catch (error) {
@@ -33,58 +33,58 @@ document.querySelector("form")
       }
     }
 
-    inputTag.value = "";
+    this.querySelector<HTMLInputElement>('input[type="file"]')!.value = "";
     this
-      .querySelectorAll<HTMLInputElement | HTMLButtonElement>("input, button")
+      .querySelectorAll<HTMLInputElement>("input")
       .forEach((tag) => tag.disabled = false);
   });
 
-function getEncoder(
-  inputTag: HTMLInputElement | null,
-): undefined | [
-  (
-    input: Uint8ClampedArray,
-    width: number,
-    height: number,
-  ) => Uint8Array | Promise<Uint8Array>,
-  string,
-] {
-  switch (inputTag?.value) {
-    case "QOI":
-      return [function (
-        input: Uint8ClampedArray,
-        width: number,
-        height: number,
-      ): Uint8Array {
-        return encodeQOI(input, {
-          width,
-          height,
-          channels: "rgba",
-          colorspace: 0,
-        });
-      }, ".qoi"];
-    default:
-      return;
+async function decode(
+  file: File,
+): Promise<[Uint8Array, number, number]> {
+  switch (file.type ?? extname(file.name)) {
+    case ".png":
+    case "image/png": {
+      const x = await decodePNG(await file.bytes());
+      return [x.body, x.header.width, x.header.height];
+    }
+    default: {
+      const x = decodeQOI(await file.bytes());
+      return [x.body, x.header.width, x.header.height];
+    }
   }
 }
 
-async function fileToInput(
-  file: File,
-): Promise<[Uint8ClampedArray, number, number]> {
-  const url = URL.createObjectURL(file);
-  const image = new Image();
-  image.src = url;
-  await image.decode();
-  const width = image.width;
-  const height = image.height;
+async function encode(
+  inputTag: HTMLInputElement,
+  input: Uint8Array,
+  width: number,
+  height: number,
+): Promise<Uint8Array> {
+  switch (inputTag.value) {
+    case "PNG":
+      return await encodePNG(input, {
+        width,
+        height,
+        compression: 0,
+        filter: 0,
+        interlace: 0,
+      });
+    default:
+      return encodeQOI(input, {
+        width,
+        height,
+        channels: "rgba",
+        colorspace: 0,
+      });
+  }
+}
 
-  const canvasTag = document.createElement("canvas");
-  canvasTag.width = width;
-  canvasTag.height = height;
-  const context = canvasTag.getContext("2d")!;
-  context.drawImage(image, 0, 0);
-  const input = context.getImageData(0, 0, width, height).data;
-
-  URL.revokeObjectURL(url);
-  return [input, width, height];
+function newExt(inputTag: HTMLInputElement): string {
+  switch (inputTag.value) {
+    case "PNG":
+      return ".png";
+    default:
+      return ".qoi";
+  }
 }
