@@ -15,14 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
-      - run: deno test -R='.output/' -W='.output/' --parallel --doc --trace-leaks --reporter=dot
+      - run: deno task test --doc
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
-      - run: deno fmt --check
-      - run: deno lint
+      - run: deno task fmt --check
+      - run: deno task lint
   publish--dry-run:
     runs-on: ubuntu-latest
     steps:
