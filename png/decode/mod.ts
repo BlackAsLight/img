@@ -146,25 +146,31 @@ export async function decodePNG(
   let chunkPLTE: Uint8Array | Uint8ClampedArray | undefined;
   let chunktRNS: Uint8Array | Uint8ClampedArray | undefined;
   let lastChunkWasIDAT = false;
+  let lastType: Uint8Array | Uint8ClampedArray | undefined;
   for (let i = chunkIHDR.o; i < input.length;) {
     const { o, type, data } = getChunk(input, view, i);
     i = o;
     if ([73, 68, 65, 84].every((x, i) => x === type[i])) {
+      if (!lastChunkWasIDAT && chunksIDAT.length) {
+        throw new TypeError(
+          `A non-IDAT chunk (${
+            new TextDecoder().decode(lastType)
+          }) was found between IDAT chunks`,
+        );
+      }
       chunksIDAT.push(data);
       lastChunkWasIDAT = true;
-    } else if (lastChunkWasIDAT) {
-      if ([73, 69, 78, 68].every((x, i) => x === type[i])) break;
-      throw new TypeError(
-        "An IDAT or IEND chunk was expected. Found: " +
-          new TextDecoder().decode(type),
-      );
-    } else if ([80, 76, 84, 69].every((x, i) => x === type[i])) {
-      if (chunkPLTE == undefined) chunkPLTE = data.slice();
-      else throw new TypeError("A PLTE chunk was already received");
-    } else if ([116, 82, 78, 83].every((x, i) => x === type[i])) {
-      if (chunktRNS == undefined) chunktRNS = data.slice();
-      else throw new TypeError("A tRNS chunk was already received");
+    } else {
+      lastChunkWasIDAT = false;
+      if ([80, 76, 84, 69].every((x, i) => x === type[i])) {
+        if (chunkPLTE == undefined) chunkPLTE = data.slice();
+        else throw new TypeError("A PLTE chunk was already received");
+      } else if ([116, 82, 78, 83].every((x, i) => x === type[i])) {
+        if (chunktRNS == undefined) chunktRNS = data.slice();
+        else throw new TypeError("A tRNS chunk was already received");
+      } else if ([73, 69, 78, 68].every((x, i) => x === type[i])) break;
     }
+    lastType = type;
   }
   switch (colorType) {
     case 3:
