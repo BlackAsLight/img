@@ -276,41 +276,60 @@ Deno.test("decodePNG() rejects due to unsupported bitDepth", async () => {
   );
 });
 
-Deno.test("decodePNG() rejects due to expecting an IDAT or IEND chunk", async () => {
-  const encoded = await encodePNG(new Uint8Array(4), {
-    width: 1,
-    height: 1,
-    compression: 0,
-    filter: 0,
-    interlace: 0,
-  });
-  const view = new DataView(
-    encoded.buffer,
-    encoded.byteOffset,
-    encoded.byteLength,
-  );
-  const [offset, chunk] = function (): [number, Chunk] {
-    for (let o = 8; o < encoded.length;) {
-      const chunk = getChunk(encoded, view, o);
-      if ([73, 69, 78, 68].every((x, i) => x === chunk.type[i])) {
-        return [o, chunk];
+Deno.test(
+  "decodePNG() rejects due to a non-IDAT chunk existing in between IDAT chunks",
+  async () => {
+    let encoded = await encodePNG(new Uint8Array(4), {
+      width: 1,
+      height: 1,
+      compression: 0,
+      filter: 0,
+      interlace: 0,
+    });
+    const view = new DataView(
+      encoded.buffer,
+      encoded.byteOffset,
+      encoded.byteLength,
+    );
+    const offset = function (): number {
+      for (let o = 8; o < encoded.length;) {
+        const chunk = getChunk(encoded, view, o);
+        if ([73, 69, 78, 68].every((x, i) => x === chunk.type[i])) {
+          return o;
+        }
+        o += chunk.length + 12;
       }
-      o += chunk.length + 12;
-    }
-    throw new Error("INVALID");
-  }();
-  ++chunk.type[0];
-  view.setUint32(
-    offset + 8 + chunk.length,
-    calcCRC(encoded.subarray(offset + 4, offset + 8 + chunk.length)),
-  );
+      throw new Error("INVALID");
+    }();
 
-  await assertRejects(
-    () => decodePNG(encoded),
-    TypeError,
-    "An IDAT or IEND chunk was expected. Found: JEND",
-  );
-});
+    const chunkJDAT = new Uint8Array(12);
+    chunkJDAT.set([74, 68, 65, 84], 4);
+    let crc = calcCRC(chunkJDAT.subarray(4, -4));
+    chunkJDAT[8] = crc >> 24 & 0xFF;
+    chunkJDAT[9] = crc >> 16 & 0xFF;
+    chunkJDAT[10] = crc >> 8 & 0xFF;
+    chunkJDAT[11] = crc & 0xFF;
+    const chunkIDAT = new Uint8Array(12);
+    chunkIDAT.set([73, 68, 65, 84], 4);
+    crc = calcCRC(chunkIDAT.subarray(4, -4));
+    chunkIDAT[8] = crc >> 24 & 0xFF;
+    chunkIDAT[9] = crc >> 16 & 0xFF;
+    chunkIDAT[10] = crc >> 8 & 0xFF;
+    chunkIDAT[11] = crc & 0xFF;
+    encoded = concat([
+      encoded.subarray(0, offset),
+      chunkJDAT,
+      chunkIDAT,
+      encoded.subarray(offset),
+    ]);
+
+    await assertRejects(
+      () => decodePNG(encoded),
+      TypeError,
+      "A non-IDAT chunk (JDAT) was found between IDAT chunks",
+    );
+  },
+);
 
 Deno.test("decodePNG() rejects due to receiving too many PLTE chunks", async () => {
   let encoded = await encodePNG(Uint8Array.from([0, 1, 2, 3]), {
