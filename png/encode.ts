@@ -1,15 +1,15 @@
-import { calcCRC } from "../_crc.ts";
-import type { PNGOptions } from "../types.ts";
-import { filter } from "./_filter.ts";
-import { passExtraction } from "./_passExtraction.ts";
-import { scanlines } from "./_scanlines.ts";
+import { calcCRC } from "@img/internal/apng-png/crc";
+import type { PNGOptions } from "@img/internal/apng-png/types";
 import {
+  filter,
   guaranteeInvisiblePixel,
+  passExtraction,
+  scanlines,
   toGrayscale,
   toGrayscaleAlpha,
   toIndex,
   toTruecolor,
-} from "./_to.ts";
+} from "@img/internal/apng-png/encode";
 
 /**
  * encodePNG is a function that encodes raw image data into the PNG image

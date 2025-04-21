@@ -33,6 +33,6 @@
  * @module
  */
 
-export * from "./decode/mod.ts";
-export * from "./encode/mod.ts";
-export * from "./types.ts";
+export * from "./decode.ts";
+export * from "./encode.ts";
+export type { PNGOptions } from "@img/internal/apng-png/types";

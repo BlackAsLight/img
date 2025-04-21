@@ -1,0 +1,10 @@
+{
+  "name": "@img/internal",
+  "version": "0.1.0",
+  "exports": {
+    "./apng-png/crc": "./apng_png/crc.ts",
+    "./apng-png/types": "./apng_png/types.ts",
+    "./apng-png/encode": "./apng_png/encode/mod.ts",
+    "./apng-png/decode": "./apng_png/decode/mod.ts"
+  }
+}

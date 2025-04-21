@@ -1,5 +1,6 @@
-import { moveTo } from "../_common_pass.ts";
+import { images, moveTo } from "../_common_pass.ts";
 import type { PNGOptions } from "../types.ts";
+export { images };
 
 export function passExtraction(
   output: Uint8Array,

@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { calcCRC } from "./_crc.ts";
+import { calcCRC } from "./crc.ts";
 
 Deno.test("calcCRC() with empty buffer", () => {
   assertEquals(calcCRC(new Uint8Array(0)), 0);

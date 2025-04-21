@@ -1,8 +1,8 @@
 import { assertEquals, assertRejects } from "@std/assert";
 import { concat } from "@std/bytes";
-import { encodePNG } from "../encode/mod.ts";
-import { decodePNG } from "../mod.ts";
-import { calcCRC } from "../_crc.ts";
+import { encodePNG } from "./encode.ts";
+import { decodePNG } from "./decode.ts";
+import { calcCRC } from "@img/internal/apng-png/crc";
 
 interface Chunk {
   length: number;
