@@ -2,7 +2,13 @@
  * The options that specify the metadata of the encoding image.
  */
 export interface PNGOptions {
+  /**
+   * The width of the image in pixels.
+   */
   width: number;
+  /**
+   * The height of the image in pixels.
+   */
   height: number;
   /**
    * The PNG spec only standardises one compression method, zlib, which is

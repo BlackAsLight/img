@@ -1,6 +1,6 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { encodePNG } from "./mod.ts";
-import { calcCRC } from "../_crc.ts";
+import { encodePNG } from "./encode.ts";
+import { calcCRC } from "@img/internal/apng-png/crc";
 
 Deno.test("encodePNG() rejecting invalid width", async () => {
   await assertRejects(

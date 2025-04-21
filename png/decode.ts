@@ -1,16 +1,16 @@
-import { calcCRC } from "../_crc.ts";
-import { scanlines } from "./_scanlines.ts";
-import type { PNGOptions } from "../types.ts";
-import { filter } from "./_filter.ts";
-import { passExtraction } from "./_passExtraction.ts";
-import { images } from "../_common_pass.ts";
+import { calcCRC } from "@img/internal/apng-png/crc";
+import type { PNGOptions } from "@img/internal/apng-png/types";
 import {
+  filter,
   fromGrayscale,
   fromGrayscaleAlpha,
   fromIndex,
   fromTruecolor,
-} from "./_from.ts";
-import { makePixelTransparent } from "./_from.ts";
+  images,
+  makePixelTransparent,
+  passExtraction,
+  scanlines,
+} from "@img/internal/apng-png/decode";
 
 /**
  * decodePNG is a function that decodes a PNG image into raw image data. The raw
