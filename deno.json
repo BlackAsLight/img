@@ -12,7 +12,7 @@
   "exclude": ["**/.*"],
   "tasks": {
     "bench": "deno bench _benchmark.ts",
-    "cov": "deno task test --coverage='.coverage/' --clean && deno coverage --html .coverage/",
+    "cov": "deno task test --reporter=dot --coverage-raw-data-only --coverage='.coverage/' --clean && deno coverage --html .coverage/",
     "cov:mac": "deno task cov && open .coverage/html/index.html",
     "cov:lin": "deno task cov && xdg-open .coverage/html/index.html",
     "cov:win": "deno task cov && start .coverage/html/index.html",
@@ -22,7 +22,7 @@
     "doc:mac": "open .docs/index.html",
     "doc:lin": "xdg-open .docs/index.html",
     "doc:win": "start .docs/index.html",
-    "test": "deno test -R='.output/' -W='.output/' --parallel --trace-leaks --reporter=dot",
+    "test": "deno test -R='.output/' -W='.output/' --parallel --trace-leaks",
     "lint": "deno lint",
     "fmt": "deno fmt",
     "ok": {
