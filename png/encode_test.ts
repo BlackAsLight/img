@@ -474,3 +474,21 @@ Deno.test("encodePNG() correctly produces truecolor alpha images", async () => {
   }
   assertEquals(foundIHDR, true);
 });
+
+Deno.test("encodePNG() aborts", async () => {
+  const controller = new AbortController();
+  controller.abort(new TypeError("POTATO"));
+
+  await assertRejects(
+    () =>
+      encodePNG(new Uint8Array(4), {
+        width: 1,
+        height: 1,
+        compression: 0,
+        filter: 0,
+        interlace: 0,
+      }, controller.signal),
+    TypeError,
+    "POTATO",
+  );
+});

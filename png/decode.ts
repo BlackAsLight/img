@@ -11,6 +11,7 @@ import {
   passExtraction,
   scanlines,
 } from "@img/internal/apng-png/decode";
+import { AbortStream } from "@std/streams/unstable-abort-stream";
 
 /**
  * decodePNG is a function that decodes a PNG image into raw image data. The raw
@@ -35,12 +36,14 @@ import {
  * ```
  *
  * @param input The PNG image.
+ * @param signal The abort signal for the operation.
  * @returns The metadata and raw image data.
  *
  * @module
  */
 export async function decodePNG(
   input: Uint8Array | Uint8ClampedArray,
+  signal?: AbortSignal,
 ): Promise<{ header: PNGOptions; body: Uint8Array }> {
   if (![137, 80, 78, 71, 13, 10, 26, 10].every((x, i) => x === input[i])) {
     throw new TypeError("PNG had invalid signature");
@@ -196,11 +199,13 @@ export async function decodePNG(
       break;
   }
 
-  const mid = await new Response(
-    ReadableStream
-      .from(chunksIDAT)
-      .pipeThrough(new DecompressionStream("deflate")),
-  ).bytes();
+  let readable = ReadableStream
+    .from(chunksIDAT)
+    .pipeThrough(new DecompressionStream("deflate"));
+  if (signal) {
+    readable = readable.pipeThrough(new AbortStream(signal));
+  }
+  const mid = await new Response(readable).bytes();
   const sizes = images(options);
   // deno-lint-ignore no-explicit-any
   const output = new Uint8Array((input.buffer as any)
