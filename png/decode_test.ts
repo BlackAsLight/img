@@ -741,3 +741,22 @@ Deno.test("decodePNG() correctly decodes with interlace 1", async () => {
     rgba,
   );
 });
+
+Deno.test("decodePNG() aborts", async () => {
+  const controller = new AbortController();
+  controller.abort(new TypeError("POTATO"));
+
+  const buffer = await encodePNG(new Uint8Array(4), {
+    width: 1,
+    height: 1,
+    compression: 0,
+    filter: 0,
+    interlace: 0,
+  });
+
+  await assertRejects(
+    () => decodePNG(buffer, controller.signal),
+    TypeError,
+    "POTATO",
+  );
+});

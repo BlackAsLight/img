@@ -10,6 +10,7 @@ import {
   toIndex,
   toTruecolor,
 } from "@img/internal/apng-png/encode";
+import { AbortStream } from "@std/streams/unstable-abort-stream";
 
 /**
  * encodePNG is a function that encodes raw image data into the PNG image
@@ -40,7 +41,8 @@ import {
  * ```
  *
  * @param input The raw image data.
- * @param options The metadata for the raw image data.
+ * @param options The options for the raw image data.
+ * @param signal The abort signal for the operation.
  * @returns An PNG image.
  *
  * @module
@@ -48,6 +50,7 @@ import {
 export async function encodePNG(
   input: Uint8Array | Uint8ClampedArray,
   options: PNGOptions,
+  signal?: AbortSignal,
 ): Promise<Uint8Array> {
   if (!Number.isInteger(options.width) || options.width < 1) {
     throw new RangeError(
@@ -217,23 +220,25 @@ export async function encodePNG(
 
   // Add IDAT chunks
   input = output.subarray(maxSize - originalSize);
-  input = await new Response(
-    ReadableStream.from([
-      output.subarray(
-        filter(
-          output,
-          colorType,
+  let readable = ReadableStream.from([
+    output.subarray(
+      filter(
+        output,
+        colorType,
+        pixelSize,
+        scanlines(
+          input,
           pixelSize,
-          scanlines(
-            input,
-            pixelSize,
-            passExtraction(input, pixelSize, options),
-          ),
+          passExtraction(input, pixelSize, options),
         ),
       ),
-    ])
-      .pipeThrough(new CompressionStream("deflate")),
-  ).bytes();
+    ),
+  ])
+    .pipeThrough(new CompressionStream("deflate"));
+  if (signal) {
+    readable = readable.pipeThrough(new AbortStream(signal));
+  }
+  input = await new Response(readable).bytes();
   for (let i = 0; i < input.length; i += 2 ** 32 - 1) {
     offset = addChunk(output, view, offset, [73, 68, 65, 84], (o) => {
       const length = Math.min(input.length - i, 2 ** 31 - 1);
