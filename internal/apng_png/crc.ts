@@ -1,4 +1,4 @@
-const CRC = function (): Uint32Array {
+const CRC = function (): Uint32Array<ArrayBuffer> {
   const array = new Uint32Array(256);
   for (let i = 0; i < 256; ++i) {
     let x = i;
@@ -10,7 +10,9 @@ const CRC = function (): Uint32Array {
   return array;
 }();
 
-export function calcCRC(buffer: Uint8Array | Uint8ClampedArray): number {
+export function calcCRC(
+  buffer: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
+): number {
   let crc = 0xFFFFFFFF;
   for (let i = 0; i < buffer.length; ++i) {
     crc = CRC[(crc ^ buffer[i]) & 0xFF] ^ (crc >>> 8);

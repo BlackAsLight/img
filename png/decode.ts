@@ -28,7 +28,7 @@ import { AbortStream } from "@std/streams/unstable-abort-stream";
  *         yield new Uint8Array([255 - r, c, r, 255]);
  *       }
  *     }
- *   }())).bytes(),
+ *   }())).bytes() as Uint8Array<ArrayBuffer>,
  *   { width: 256, height: 256, compression: 0, filter: 0, interlace: 0 },
  * );
  *
@@ -42,9 +42,9 @@ import { AbortStream } from "@std/streams/unstable-abort-stream";
  * @module
  */
 export async function decodePNG(
-  input: Uint8Array | Uint8ClampedArray,
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
   signal?: AbortSignal,
-): Promise<{ header: PNGOptions; body: Uint8Array }> {
+): Promise<{ header: PNGOptions; body: Uint8Array<ArrayBuffer> }> {
   if (![137, 80, 78, 71, 13, 10, 26, 10].every((x, i) => x === input[i])) {
     throw new TypeError("PNG had invalid signature");
   }
@@ -145,11 +145,21 @@ export async function decodePNG(
     }
   }();
 
-  const chunksIDAT: (Uint8Array | Uint8ClampedArray)[] = [];
-  let chunkPLTE: Uint8Array | Uint8ClampedArray | undefined;
-  let chunktRNS: Uint8Array | Uint8ClampedArray | undefined;
+  const chunksIDAT:
+    (Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>)[] = [];
+  let chunkPLTE:
+    | Uint8Array<ArrayBuffer>
+    | Uint8ClampedArray<ArrayBuffer>
+    | undefined;
+  let chunktRNS:
+    | Uint8Array<ArrayBuffer>
+    | Uint8ClampedArray<ArrayBuffer>
+    | undefined;
   let lastChunkWasIDAT = false;
-  let lastType: Uint8Array | Uint8ClampedArray | undefined;
+  let lastType:
+    | Uint8Array<ArrayBuffer>
+    | Uint8ClampedArray<ArrayBuffer>
+    | undefined;
   for (let i = chunkIHDR.o; i < input.length;) {
     const { o, type, data } = getChunk(input, view, i);
     i = o;
@@ -205,7 +215,7 @@ export async function decodePNG(
   if (signal) {
     readable = readable.pipeThrough(new AbortStream(signal));
   }
-  const mid = await new Response(readable).bytes();
+  const mid = await new Response(readable).bytes() as Uint8Array<ArrayBuffer>;
   const sizes = images(options);
   // deno-lint-ignore no-explicit-any
   const output = new Uint8Array((input.buffer as any)
@@ -239,7 +249,7 @@ export async function decodePNG(
       fromIndex(
         output,
         i,
-        function (): Uint32Array {
+        function (): Uint32Array<ArrayBuffer> {
           const palette = new Uint32Array(chunkPLTE!.length / 3);
           chunktRNS = chunktRNS ??
             new Uint8Array(chunkPLTE!.length / 3).fill(255);
@@ -263,13 +273,13 @@ export async function decodePNG(
 }
 
 function getChunk(
-  input: Uint8Array | Uint8ClampedArray,
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
   view: DataView,
   offset: number,
 ): {
   o: number;
-  type: Uint8Array | Uint8ClampedArray;
-  data: Uint8Array | Uint8ClampedArray;
+  type: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>;
+  data: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>;
 } {
   const length = view.getUint32(offset);
   if (

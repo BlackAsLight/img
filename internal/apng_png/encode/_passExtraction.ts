@@ -2,7 +2,7 @@ import { images, moveTo } from "../_common_pass.ts";
 import type { PNGOptions } from "../types.ts";
 
 export function passExtraction(
-  input: Uint8Array,
+  input: Uint8Array<ArrayBuffer>,
   pSize: number,
   options: PNGOptions,
 ): [number, number][] {

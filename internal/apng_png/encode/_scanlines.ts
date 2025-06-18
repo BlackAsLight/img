@@ -1,9 +1,9 @@
 export function scanlines(
-  input: Uint8Array,
+  input: Uint8Array<ArrayBuffer>,
   pSize: number,
   images: [number, number][],
-): Uint8Array[][] {
-  const output: Uint8Array[][] = new Array(images.length)
+): Uint8Array<ArrayBuffer>[][] {
+  const output: Uint8Array<ArrayBuffer>[][] = new Array(images.length)
     .fill(0)
     .map(() => []);
   let i = 0;

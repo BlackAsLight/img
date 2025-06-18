@@ -1,10 +1,10 @@
 import { filterTypes } from "../_common_filter.ts";
 
 export function filter(
-  mid: Uint8Array,
-  images: Uint8Array[][],
+  mid: Uint8Array<ArrayBuffer>,
+  images: Uint8Array<ArrayBuffer>[][],
   pSize: number,
-): Uint8Array {
+): Uint8Array<ArrayBuffer> {
   for (const lines of images) {
     for (let y = 0; y < lines.length; ++y) {
       const index = lines[y][0];

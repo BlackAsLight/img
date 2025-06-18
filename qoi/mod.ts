@@ -21,7 +21,7 @@
  *       yield Uint8Array.from([255 - r, c, r, 255]);
  *     }
  *   }
- * }())).bytes();
+ * }())).bytes() as Uint8Array<ArrayBuffer>;
  *
  * await Deno.writeFile(".output/image.qoi", encodeQOI(rawData, {
  *   width: 256,
