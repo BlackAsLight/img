@@ -1,5 +1,5 @@
 export function makePixelTransparent(
-  output: Uint8Array,
+  output: Uint8Array<ArrayBuffer>,
   r: number,
   g: number,
   b: number,
@@ -11,7 +11,10 @@ export function makePixelTransparent(
   }
 }
 
-export function fromGrayscale(output: Uint8Array, i: number): void {
+export function fromGrayscale(
+  output: Uint8Array<ArrayBuffer>,
+  i: number,
+): void {
   let o = 0;
   for (; i < output.length; ++i) {
     output[o++] = output[i];
@@ -21,7 +24,10 @@ export function fromGrayscale(output: Uint8Array, i: number): void {
   }
 }
 
-export function fromGrayscaleAlpha(output: Uint8Array, i: number): void {
+export function fromGrayscaleAlpha(
+  output: Uint8Array<ArrayBuffer>,
+  i: number,
+): void {
   let o = 0;
   for (; i < output.length; i += 2) {
     output[o++] = output[i];
@@ -31,7 +37,10 @@ export function fromGrayscaleAlpha(output: Uint8Array, i: number): void {
   }
 }
 
-export function fromTruecolor(output: Uint8Array, i: number): void {
+export function fromTruecolor(
+  output: Uint8Array<ArrayBuffer>,
+  i: number,
+): void {
   let o = 0;
   for (; i < output.length; i += 3) {
     output[o++] = output[i];
@@ -42,9 +51,9 @@ export function fromTruecolor(output: Uint8Array, i: number): void {
 }
 
 export function fromIndex(
-  output: Uint8Array,
+  output: Uint8Array<ArrayBuffer>,
   i: number,
-  palette: Uint32Array,
+  palette: Uint32Array<ArrayBuffer>,
 ): void {
   let o = 0;
   for (; i < output.length; ++i) {

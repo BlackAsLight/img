@@ -1,6 +1,6 @@
 export const filterTypes = [
   function type0(
-    _lines: Uint8Array[],
+    _lines: Uint8Array<ArrayBuffer>[],
     _x: number,
     _y: number,
     _pSize: number,
@@ -8,7 +8,7 @@ export const filterTypes = [
     return 0;
   },
   function type1(
-    lines: Uint8Array[],
+    lines: Uint8Array<ArrayBuffer>[],
     x: number,
     y: number,
     pSize: number,
@@ -16,7 +16,7 @@ export const filterTypes = [
     return lines[y][x - pSize] ?? 0;
   },
   function type2(
-    lines: Uint8Array[],
+    lines: Uint8Array<ArrayBuffer>[],
     x: number,
     y: number,
     _pSize: number,
@@ -24,7 +24,7 @@ export const filterTypes = [
     return y === 0 ? 0 : lines[y - 1][x];
   },
   function type3(
-    lines: Uint8Array[],
+    lines: Uint8Array<ArrayBuffer>[],
     x: number,
     y: number,
     pSize: number,
@@ -35,7 +35,7 @@ export const filterTypes = [
         ) / 2 | 0;
   },
   function type4(
-    lines: Uint8Array[],
+    lines: Uint8Array<ArrayBuffer>[],
     x: number,
     y: number,
     pSize: number,

@@ -1,8 +1,8 @@
 import { calcIndex } from "./_common.ts";
 
 export function isEqual(
-  previousPixel: Uint8Array,
-  currentPixel: Uint8Array,
+  previousPixel: Uint8Array<ArrayBuffer>,
+  currentPixel: Uint8Array<ArrayBuffer>,
   isRGB: boolean,
 ): boolean {
   for (let i = 0; i < (isRGB ? 3 : 4); ++i) {
@@ -12,17 +12,17 @@ export function isEqual(
 }
 
 export function createEncoder(isRGB: boolean): (
-  data: Uint8Array,
+  data: Uint8Array<ArrayBuffer>,
   i: number,
   o: number,
 ) => { i: number; o: number } {
   let run = 0;
   const previousPixel = new Uint8Array([0, 0, 0, 255]);
-  const seenPixels: Uint8Array[] = new Array(64)
+  const seenPixels: Uint8Array<ArrayBuffer>[] = new Array(64)
     .fill(0)
     .map((_) => new Uint8Array([0, 0, 0, 0]));
   return function (
-    data: Uint8Array,
+    data: Uint8Array<ArrayBuffer>,
     i: number,
     o: number,
   ): { i: number; o: number } {

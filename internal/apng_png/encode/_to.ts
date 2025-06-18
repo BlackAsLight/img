@@ -1,5 +1,5 @@
 export function guaranteeInvisiblePixel(
-  input: Uint8Array | Uint8ClampedArray,
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
   colors: Map<number, number>,
   forGrayscale: boolean,
 ): number | undefined {
@@ -46,7 +46,7 @@ export function guaranteeInvisiblePixel(
 }
 
 function replaceTransparentPixels(
-  input: Uint8Array | Uint8ClampedArray,
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
   r: number,
   g: number,
   b: number,
@@ -61,15 +61,15 @@ function replaceTransparentPixels(
 }
 
 export function toGrayscale(
-  input: Uint8Array | Uint8ClampedArray,
-): Uint8Array | Uint8ClampedArray {
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
+): Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer> {
   for (let i = 4; i < input.length; i += 4) input[i / 4] = input[i];
   return input.subarray(0, input.length / 4);
 }
 
 export function toGrayscaleAlpha(
-  input: Uint8Array | Uint8ClampedArray,
-): Uint8Array | Uint8ClampedArray {
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
+): Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer> {
   input[1] = input[3];
   for (let i = 4; i < input.length; i += 4) {
     input[i / 2] = input[i];
@@ -79,8 +79,8 @@ export function toGrayscaleAlpha(
 }
 
 export function toTruecolor(
-  input: Uint8Array | Uint8ClampedArray,
-): Uint8Array | Uint8ClampedArray {
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
+): Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer> {
   for (let i = 4; i < input.length; i += 4) {
     input[i / 4 * 3] = input[i];
     input[i / 4 * 3 + 1] = input[i + 1];
@@ -90,9 +90,9 @@ export function toTruecolor(
 }
 
 export function toIndex(
-  input: Uint8Array | Uint8ClampedArray,
-  palette: Uint32Array,
-): Uint8Array | Uint8ClampedArray {
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
+  palette: Uint32Array<ArrayBuffer>,
+): Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer> {
   const view = new DataView(input.buffer, input.byteOffset, input.byteLength);
   for (let i = 0; i < input.length; i += 4) {
     input[i / 4] = palette.indexOf(view.getUint32(i));

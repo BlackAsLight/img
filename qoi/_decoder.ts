@@ -1,16 +1,16 @@
 import { calcIndex } from "./_common.ts";
 
 export function createDecoder(): (
-  input: Uint8Array,
+  input: Uint8Array<ArrayBuffer>,
   i: number,
   o: number,
 ) => { i: number; o: number; c: number; isEnd: boolean } {
   const previousPixel = new Uint8Array([0, 0, 0, 255]);
-  const seenPixels: Uint8Array[] = new Array(64)
+  const seenPixels: Uint8Array<ArrayBuffer>[] = new Array(64)
     .fill(0)
     .map((_) => new Uint8Array([0, 0, 0, 0]));
   return function (
-    data: Uint8Array,
+    data: Uint8Array<ArrayBuffer>,
     i: number,
     o: number,
   ): { i: number; o: number; c: number; isEnd: boolean } {

@@ -18,7 +18,7 @@ import type { QOIOptions } from "./types.ts";
  *       yield Uint8Array.from([255 - r, c, r, 255]);
  *     }
  *   }
- * }())).bytes();
+ * }())).bytes() as Uint8Array<ArrayBuffer>;
  *
  * await Deno.writeFile(".output/image.qoi", encodeQOI(rawData, {
  *   width: 256,
@@ -34,9 +34,9 @@ import type { QOIOptions } from "./types.ts";
  * @module
  */
 export function encodeQOI(
-  input: Uint8Array | Uint8ClampedArray,
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
   options: QOIOptions,
-): Uint8Array {
+): Uint8Array<ArrayBuffer> {
   if (options.width < 0 || Number.isNaN(options.width)) {
     throw new RangeError("Width cannot be a negative number or NaN");
   }

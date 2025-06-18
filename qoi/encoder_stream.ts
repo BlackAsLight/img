@@ -33,7 +33,8 @@ import type { QOIOptions } from "./types.ts";
  *
  * @module
  */
-export class QOIEncoderStream extends TransformStream<Uint8Array, Uint8Array> {
+export class QOIEncoderStream
+  extends TransformStream<Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>> {
   constructor(options: QOIOptions) {
     if (options.width < 0 || Number.isNaN(options.width)) {
       throw new RangeError("Width cannot be a negative number or NaN");

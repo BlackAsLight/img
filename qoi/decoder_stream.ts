@@ -18,17 +18,19 @@ import { createDecoder } from "./_decoder.ts";
  * @module
  */
 export class QOIDecoderStream
-  implements TransformStream<Uint8Array, Uint8Array> {
-  #readable: ReadableStream<Uint8Array>;
-  #writable: WritableStream<Uint8Array>;
+  implements TransformStream<Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>> {
+  #readable: ReadableStream<Uint8Array<ArrayBuffer>>;
+  #writable: WritableStream<Uint8Array<ArrayBuffer>>;
   constructor(cb: (header: QOIOptions) => unknown = () => {}) {
     const { readable, writable } = new TransformStream<
-      Uint8Array,
-      Uint8Array
+      Uint8Array<ArrayBuffer>,
+      Uint8Array<ArrayBuffer>
     >();
     this.#readable = ReadableStream.from(
-      async function* (): AsyncGenerator<Uint8Array> {
-        const byteStream = toByteStream(readable);
+      async function* (): AsyncGenerator<Uint8Array<ArrayBuffer>> {
+        const byteStream = toByteStream(readable) as ReadableStream<
+          Uint8Array<ArrayBuffer>
+        >;
         const { width, height, isRGB } = await async function (): Promise<
           { width: number; height: number; isRGB: boolean }
         > {
@@ -115,11 +117,11 @@ export class QOIDecoderStream
     this.#writable = writable;
   }
 
-  get readable(): ReadableStream<Uint8Array> {
+  get readable(): ReadableStream<Uint8Array<ArrayBuffer>> {
     return this.#readable;
   }
 
-  get writable(): WritableStream<Uint8Array> {
+  get writable(): WritableStream<Uint8Array<ArrayBuffer>> {
     return this.#writable;
   }
 }

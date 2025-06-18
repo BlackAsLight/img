@@ -6,5 +6,8 @@ Deno.test("calcCRC() with empty buffer", () => {
 });
 
 Deno.test('calcCRC() with "Hello World"', () => {
-  assertEquals(calcCRC(new TextEncoder().encode("Hello World")), 0x4a17b156);
+  assertEquals(
+    calcCRC(new TextEncoder().encode("Hello World") as Uint8Array<ArrayBuffer>),
+    0x4a17b156,
+  );
 });

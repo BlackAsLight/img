@@ -29,7 +29,7 @@ import { AbortStream } from "@std/streams/unstable-abort-stream";
  *       yield Uint8Array.from([255 - r, c, r, 255]);
  *     }
  *   }
- * }())).bytes();
+ * }())).bytes() as Uint8Array<ArrayBuffer>;
  *
  * await Deno.writeFile(".output/encode.png", await encodePNG(rawData, {
  *   width: 256,
@@ -48,10 +48,10 @@ import { AbortStream } from "@std/streams/unstable-abort-stream";
  * @module
  */
 export async function encodePNG(
-  input: Uint8Array | Uint8ClampedArray,
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
   options: PNGOptions,
   signal?: AbortSignal,
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
   if (!Number.isInteger(options.width) || options.width < 1) {
     throw new RangeError(
       `Width (${options.width}) must be an integer value greater than zero`,
@@ -81,7 +81,7 @@ export async function encodePNG(
     throw new TypeError(`Unsupported Interlace Method: ${options.interlace}`);
   }
 
-  let palette: Uint32Array | number | undefined;
+  let palette: Uint32Array<ArrayBuffer> | number | undefined;
   const [colorType, pixelSize] = function (): [number, number] {
     let isOpaque = true;
     let isHazy = false;
@@ -197,7 +197,7 @@ export async function encodePNG(
     case 3:
       // Add PLTE chnk (Optional)
       offset = addChunk(output, view, offset, [80, 76, 84, 69], (o) => {
-        for (const pixel of palette as Uint32Array) {
+        for (const pixel of palette as Uint32Array<ArrayBuffer>) {
           output[o++] = pixel >> 24 & 0xFF;
           output[o++] = pixel >> 16 & 0xFF;
           output[o++] = pixel >> 8 & 0xFF;
@@ -205,11 +205,12 @@ export async function encodePNG(
         return o;
       });
       if (
-        (palette as Uint32Array).find((x) => (x & 0xFF) !== 255) != undefined
+        (palette as Uint32Array<ArrayBuffer>).find((x) => (x & 0xFF) !== 255) !=
+          undefined
       ) {
         // Add tRNS chunk (Optional)
         offset = addChunk(output, view, offset, [116, 82, 78, 83], (o) => {
-          for (const pixel of palette as Uint32Array) {
+          for (const pixel of palette as Uint32Array<ArrayBuffer>) {
             output[o++] = pixel & 0xFF;
           }
           return o;
@@ -238,7 +239,7 @@ export async function encodePNG(
   if (signal) {
     readable = readable.pipeThrough(new AbortStream(signal));
   }
-  input = await new Response(readable).bytes();
+  input = await new Response(readable).bytes() as Uint8Array<ArrayBuffer>;
   for (let i = 0; i < input.length; i += 2 ** 32 - 1) {
     offset = addChunk(output, view, offset, [73, 68, 65, 84], (o) => {
       const length = Math.min(input.length - i, 2 ** 31 - 1);
@@ -254,7 +255,7 @@ export async function encodePNG(
 }
 
 function addChunk(
-  output: Uint8Array,
+  output: Uint8Array<ArrayBuffer>,
   view: DataView,
   offset: number,
   chunkType: ArrayLike<number>,

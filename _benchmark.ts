@@ -3,15 +3,17 @@ import { decodeQOI, encodeQOI } from "jsr:@img/qoi";
 
 const width = 256;
 const height = 256;
-function getData(): Promise<Uint8Array> {
-  return new Response(ReadableStream.from(function* (): Generator<Uint8Array> {
-    for (let r = 0; r < width; ++r) {
-      for (let c = 0; c < height; ++c) {
-        yield Uint8Array.from([255 - r, c, r, 255]);
+function getData(): Promise<Uint8Array<ArrayBuffer>> {
+  return new Response(
+    ReadableStream.from(function* (): Generator<Uint8Array<ArrayBuffer>> {
+      for (let r = 0; r < width; ++r) {
+        for (let c = 0; c < height; ++c) {
+          yield Uint8Array.from([255 - r, c, r, 255]);
+        }
       }
-    }
-  }()))
-    .bytes();
+    }()),
+  )
+    .bytes() as Promise<Uint8Array<ArrayBuffer>>;
 }
 
 const RAW_INPUT = await getData();

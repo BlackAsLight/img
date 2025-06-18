@@ -3,8 +3,8 @@ import type { PNGOptions } from "../types.ts";
 export { images };
 
 export function passExtraction(
-  output: Uint8Array,
-  mid: Uint8Array,
+  output: Uint8Array<ArrayBuffer>,
+  mid: Uint8Array<ArrayBuffer>,
   options: PNGOptions,
   pSize: number,
   sizes: [number, number][],

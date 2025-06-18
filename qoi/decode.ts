@@ -15,7 +15,7 @@ import type { QOIOptions } from "./types.ts";
  *         yield new Uint8Array([255 - r, c, r, 255]);
  *       }
  *     }
- *   }())).bytes(),
+ *   }())).bytes() as Uint8Array<ArrayBuffer>,
  *   { width: 256, height: 256, channels: "rgb", colorspace: 0 },
  * );
  *
@@ -28,8 +28,8 @@ import type { QOIOptions } from "./types.ts";
  * @module
  */
 export function decodeQOI(
-  input: Uint8Array | Uint8ClampedArray,
-): { header: QOIOptions; body: Uint8Array } {
+  input: Uint8Array<ArrayBuffer> | Uint8ClampedArray<ArrayBuffer>,
+): { header: QOIOptions; body: Uint8Array<ArrayBuffer> } {
   if (input.length < 14 + 8) {
     throw new RangeError("QOI input is too short to be valid");
   }

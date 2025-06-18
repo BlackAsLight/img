@@ -1,10 +1,10 @@
 import { filterTypes } from "../_common_filter.ts";
 
 export function filter(
-  output: Uint8Array,
+  output: Uint8Array<ArrayBuffer>,
   colorType: number,
   pSize: number,
-  images: Uint8Array[][],
+  images: Uint8Array<ArrayBuffer>[][],
 ): number {
   images = images.filter((x) => x.filter((x) => x.length).length);
   const o = output.length -

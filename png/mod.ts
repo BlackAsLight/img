@@ -19,7 +19,7 @@
  *       yield Uint8Array.from([255 - r, c, r, 255]);
  *     }
  *   }
- * }())).bytes();
+ * }())).bytes() as Uint8Array<ArrayBuffer>;
  *
  * await Deno.writeFile(".output/mod.png", await encodePNG(rawData, {
  *   width: 256,

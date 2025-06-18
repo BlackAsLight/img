@@ -41,15 +41,15 @@ document.querySelector<HTMLFormElement>("form")
 
 async function decode(
   file: File,
-): Promise<[Uint8Array, number, number]> {
+): Promise<[Uint8Array<ArrayBuffer>, number, number]> {
   switch (file.type ?? extname(file.name)) {
     case ".png":
     case "image/png": {
-      const x = await decodePNG(await file.bytes());
+      const x = await decodePNG(await file.bytes() as Uint8Array<ArrayBuffer>);
       return [x.body, x.header.width, x.header.height];
     }
     default: {
-      const x = decodeQOI(await file.bytes());
+      const x = decodeQOI(await file.bytes() as Uint8Array<ArrayBuffer>);
       return [x.body, x.header.width, x.header.height];
     }
   }
@@ -57,10 +57,10 @@ async function decode(
 
 async function encode(
   inputTag: HTMLInputElement,
-  input: Uint8Array,
+  input: Uint8Array<ArrayBuffer>,
   width: number,
   height: number,
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
   switch (inputTag.value) {
     case "PNG":
       return await encodePNG(input, {

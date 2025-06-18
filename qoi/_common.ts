@@ -1,4 +1,7 @@
-export function calcIndex(pixel: Uint8Array, isRGB: boolean): number {
+export function calcIndex(
+  pixel: Uint8Array<ArrayBuffer>,
+  isRGB: boolean,
+): number {
   return (
     pixel[0] * 3 +
     pixel[1] * 5 +

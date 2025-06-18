@@ -6,13 +6,13 @@ import { calcCRC } from "@img/internal/apng-png/crc";
 
 interface Chunk {
   length: number;
-  type: Uint8Array;
-  data: Uint8Array;
+  type: Uint8Array<ArrayBuffer>;
+  data: Uint8Array<ArrayBuffer>;
   crc: number;
 }
 
 function getChunk(
-  buffer: Uint8Array,
+  buffer: Uint8Array<ArrayBuffer>,
   view: DataView,
   offset: number,
 ): Chunk {
