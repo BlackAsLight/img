@@ -1,6 +1,6 @@
 {
   "name": "@img/internal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "exports": {
     "./apng-png/crc": "./apng_png/crc.ts",
     "./apng-png/types": "./apng_png/types.ts",
