@@ -2,4 +2,5 @@
 .coverage/
 .docs/
 .output/
+deno.lock
 localhost/static/coverage/
