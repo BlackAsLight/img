@@ -10,7 +10,6 @@ import {
   toIndex,
   toTruecolor,
 } from "@img/internal/apng-png/encode";
-import { AbortStream } from "@std/streams/unstable-abort-stream";
 
 /**
  * encodePNG is a function that encodes raw image data into the PNG image
@@ -221,25 +220,24 @@ export async function encodePNG(
 
   // Add IDAT chunks
   input = output.subarray(maxSize - originalSize);
-  let readable = ReadableStream.from([
-    output.subarray(
-      filter(
-        output,
-        colorType,
-        pixelSize,
-        scanlines(
-          input,
-          pixelSize,
-          passExtraction(input, pixelSize, options),
+  input = await new Response(
+    ReadableStream
+      .from([
+        output.subarray(
+          filter(
+            output,
+            colorType,
+            pixelSize,
+            scanlines(
+              input,
+              pixelSize,
+              passExtraction(input, pixelSize, options),
+            ),
+          ),
         ),
-      ),
-    ),
-  ])
-    .pipeThrough(new CompressionStream("deflate"));
-  if (signal) {
-    readable = readable.pipeThrough(new AbortStream(signal));
-  }
-  input = await new Response(readable).bytes() as Uint8Array<ArrayBuffer>;
+      ])
+      .pipeThrough(new CompressionStream("deflate"), { signal }),
+  ).bytes() as Uint8Array<ArrayBuffer>;
   for (let i = 0; i < input.length; i += 2 ** 32 - 1) {
     offset = addChunk(output, view, offset, [73, 68, 65, 84], (o) => {
       const length = Math.min(input.length - i, 2 ** 31 - 1);

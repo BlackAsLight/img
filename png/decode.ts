@@ -11,7 +11,6 @@ import {
   passExtraction,
   scanlines,
 } from "@img/internal/apng-png/decode";
-import { AbortStream } from "@std/streams/unstable-abort-stream";
 
 /**
  * decodePNG is a function that decodes a PNG image into raw image data. The raw
@@ -209,13 +208,11 @@ export async function decodePNG(
       break;
   }
 
-  let readable = ReadableStream
-    .from(chunksIDAT)
-    .pipeThrough(new DecompressionStream("deflate"));
-  if (signal) {
-    readable = readable.pipeThrough(new AbortStream(signal));
-  }
-  const mid = await new Response(readable).bytes() as Uint8Array<ArrayBuffer>;
+  const mid = await new Response(
+    ReadableStream
+      .from(chunksIDAT)
+      .pipeThrough(new DecompressionStream("deflate"), { signal }),
+  ).bytes() as Uint8Array<ArrayBuffer>;
   const sizes = images(options);
   // deno-lint-ignore no-explicit-any
   const output = new Uint8Array((input.buffer as any)
