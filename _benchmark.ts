@@ -1,5 +1,5 @@
-import { decodePNG, encodePNG } from "jsr:@img/png";
-import { decodeQOI, encodeQOI } from "jsr:@img/qoi";
+import { decodePNG, encodePNG } from "@img/png";
+import { decodeQOI, encodeQOI } from "@img/qoi";
 
 const width = 256;
 const height = 256;
