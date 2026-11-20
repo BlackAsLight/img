@@ -194,7 +194,7 @@ export async function encodePNG(
       }
       break;
     case 3:
-      // Add PLTE chnk (Optional)
+      // Add PLTE chunk (Optional)
       offset = addChunk(output, view, offset, [80, 76, 84, 69], (o) => {
         for (const pixel of palette as Uint32Array<ArrayBuffer>) {
           output[o++] = pixel >> 24 & 0xFF;
