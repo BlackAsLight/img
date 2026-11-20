@@ -504,14 +504,17 @@ Deno.test("decodePNG() rejects due to tRNS chunk having invalid length with colo
     }
     throw new Error("INVALID");
   }();
-  view.setUint32(offset, chunk.length - 1);
+  const chunkData = new Uint8Array(chunk.length + 1);
+  chunkData.set(chunkData);
+  view.setUint32(offset, chunkData.length);
   view.setUint32(
-    offset + 8 + chunk.length - 1,
-    calcCRC(encoded.subarray(offset + 4, offset + 8 + chunk.length - 1)),
+    offset + 8 + chunk.length,
+    calcCRC(concat([Uint8Array.from([116, 82, 78, 83]), chunkData])),
   );
   encoded = concat([
-    encoded.subarray(0, offset + 12 + chunk.length - 1),
-    encoded.subarray(offset + 12 + chunk.length),
+    encoded.subarray(0, offset + 8),
+    chunkData,
+    encoded.subarray(offset + 8 + chunk.length),
   ]);
 
   await assertRejects(

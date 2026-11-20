@@ -192,8 +192,14 @@ export async function decodePNG(
       if (chunkPLTE.length % 3 !== 0 || chunkPLTE.length > 256 * 3) {
         throw new RangeError("The PLTE chunk has an invalid length");
       }
-      if (chunktRNS != undefined && chunkPLTE.length / 3 !== chunktRNS.length) {
-        throw new RangeError("The tRNS chunk has an invalid length");
+      if (chunktRNS != undefined) {
+        if (chunkPLTE.length / 3 < chunktRNS.length) {
+          throw new RangeError("The tRNS chunk has an invalid length");
+        } else {
+          const temp = new Uint8Array(chunkPLTE.length / 3).fill(255);
+          temp.set(chunktRNS);
+          chunktRNS = temp;
+        }
       }
       break;
     case 0:
