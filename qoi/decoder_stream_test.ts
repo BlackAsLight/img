@@ -1,5 +1,5 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { toBytes } from "@std/streams/unstable-to-bytes";
+import { toBytes } from "@std/streams";
 import { QOIDecoderStream } from "./decoder_stream.ts";
 import { QOIEncoderStream } from "./encoder_stream.ts";
 
